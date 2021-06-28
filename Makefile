@@ -1,8 +1,8 @@
 mtest:
-	python manage.py test
+	-python manage.py test
 
 ftest:
-	python functional_tests.py
+	-python functional_tests.py
 
 run:
-	python manage.py runserver
+	-python manage.py runserver
