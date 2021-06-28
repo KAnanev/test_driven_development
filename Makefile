@@ -3,3 +3,6 @@ mtest:
 
 ftest:
 	python functional_tests.py
+
+run:
+	python manage.py runserver
