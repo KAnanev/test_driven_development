@@ -1,26 +1,6 @@
 from django.test import TestCase
 from lists.models import Item
-from django.utils.http import unquote
-
-
-class ListViewTest(TestCase):
-	''' Тест: Представление списка. '''
-
-	def test_uses_list_templates(self):
-		''' Тест: Используется шаблон списка. '''
-
-		response = self.client.get('/lists/один-единственный-список-в-мире')
-		self.assertTemplateUsed(response, 'list.html')
-
-	def test_displays_all_items(self):
-		''' Тест: Отображаются все элементы списка. '''
-		Item.objects.create(text='itemey 1')
-		Item.objects.create(text='itemey 2')
-
-		response = self.client.get('/lists/один-единственный-список-в-мире')
-
-		self.assertContains(response, 'itemey 1')
-		self.assertContains(response, 'itemey 2')
+from django.utils.http import quote
 
 
 class HomePageTest(TestCase):
@@ -32,10 +12,14 @@ class HomePageTest(TestCase):
 		response = self.client.get('/')
 		self.assertTemplateUsed(response, 'home.html')
 
+
+class NewListTest(TestCase):
+	''' Тест нового списка '''
+
 	def test_can_save_a_POST_request(self):
 		''' Тест: Можно сохранить post-запрос. '''
 
-		self.client.post('/', data={'item_text': 'A new list item'})
+		self.client.post('/lists/new', data={'item_text': 'A new list item'})
 
 		self.assertEqual(Item.objects.count(), 1)
 		new_item = Item.objects.first()
@@ -43,14 +27,29 @@ class HomePageTest(TestCase):
 
 	def test_redirects_after_POST(self):
 		''' Тест: переадресует после post-запроса.  '''
-		response = self.client.post('/', data={'item_text': 'A new list item'})
-		self.assertEqual(response.status_code, 302)
-		self.assertEqual(unquote(response['location']), '/lists/один-единственный-список-в-мире')
-	def test_only_saves_items_when_necessary(self):
-		''' Тест: Сохраняет элементы, только когда нужно.  '''
 
-		self.client.get('/')
-		self.assertEqual(Item.objects.count(), 0)
+		response = self.client.post('/lists/new', data={'item_text': 'A new list item'})
+		self.assertRedirects(response, quote('/lists/один-единственный-список-в-мире/'))
+
+
+class ListViewTest(TestCase):
+	''' Тест: Представление списка. '''
+
+	def test_uses_list_templates(self):
+		''' Тест: Используется шаблон списка. '''
+
+		response = self.client.get('/lists/один-единственный-список-в-мире/')
+		self.assertTemplateUsed(response, 'list.html')
+
+	def test_displays_all_items(self):
+		''' Тест: Отображаются все элементы списка. '''
+		Item.objects.create(text='itemey 1')
+		Item.objects.create(text='itemey 2')
+
+		response = self.client.get('/lists/один-единственный-список-в-мире/')
+
+		self.assertContains(response, 'itemey 1')
+		self.assertContains(response, 'itemey 2')
 
 
 class ItemModelTest(TestCase):
@@ -74,3 +73,6 @@ class ItemModelTest(TestCase):
 		second_saved_item = saved_items[1]
 		self.assertEqual(first_saved_item.text, 'The first (ever) list item')
 		self.assertEqual(second_saved_item.text, 'Item the second')
+
+
+
