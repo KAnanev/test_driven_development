@@ -15,11 +15,10 @@ Including another URLconf
 """
 
 from django.urls import path
-from django.conf.urls import include
-from lists import views as list_views
-from lists import urls as list_url
+from lists import views
 
 urlpatterns = [
-    path('', list_views.home_page, name='home'),
-    path('lists/', include(list_url)),
+    path('new', views.new_list, name='new_list'),
+    path('<int:list_id>/', views.view_list, name='view_list'),
+    path('<int:list_id>/add_item', views.add_item, name='add_item'),
 ]
