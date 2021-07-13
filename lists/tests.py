@@ -1,23 +1,22 @@
 from django.test import TestCase
 from lists.models import Item, List
-from django.utils.http import quote
 
 
 class HomePageTest(TestCase):
-	''' Тест домашней страницы. '''
+	""" Тест домашней страницы. """
 
 	def test_uses_home_template(self):
-		''' Тест: Используется домашний шаблон. '''
+		""" Тест: Используется домашний шаблон. """
 
 		response = self.client.get('/')
 		self.assertTemplateUsed(response, 'home.html')
 
 
 class NewListTest(TestCase):
-	''' Тест нового списка '''
+	""" Тест нового списка """
 
 	def test_can_save_a_POST_request(self):
-		''' Тест: Можно сохранить post-запрос. '''
+		""" Тест: Можно сохранить post-запрос. """
 
 		self.client.post('/lists/new', data={'item_text': 'A new list item'})
 
@@ -26,7 +25,7 @@ class NewListTest(TestCase):
 		self.assertEqual(new_item.text, 'A new list item')
 
 	def test_redirects_after_POST(self):
-		''' Тест: переадресует после post-запроса.  '''
+		""" Тест: переадресует после post-запроса.  """
 
 		response = self.client.post('/lists/new', data={'item_text': 'A new list item'})
 		new_list = List.objects.first()
@@ -34,12 +33,11 @@ class NewListTest(TestCase):
 
 
 class NewItemTest(TestCase):
-	''' Тест нового элемента списка '''
+	""" Тест нового элемента списка """
 
 	def test_can_save_a_POST_request_to_an_existing_list(self):
-		''' Тест: Можно сохранить post-запрос в существующий список '''
+		""" Тест: Можно сохранить post-запрос в существующий список """
 
-		other_list = List.objects.create()
 		correct_list = List.objects.create()
 
 		self.client.post(
@@ -53,9 +51,8 @@ class NewItemTest(TestCase):
 		self.assertEqual(new_item.list, correct_list)
 
 	def test_redirects_to_list_view(self):
-		''' Тест: Переадресуется в представление списка. '''
+		""" Тест: Переадресуется в представление списка. """
 
-		other_list = List.objects.create()
 		correct_list = List.objects.create()
 
 		response = self.client.post(
@@ -67,28 +64,27 @@ class NewItemTest(TestCase):
 
 
 class ListViewTest(TestCase):
-	''' Тест: Представление списка. '''
+	""" Тест: Представление списка. """
 
 	def test_uses_list_templates(self):
-		''' Тест: Используется шаблон списка. '''
+		""" Тест: Используется шаблон списка. """
 
 		list_ = List.objects.create()
 		response = self.client.get(f'/lists/{list_.id}/')
 		self.assertTemplateUsed(response, 'list.html')
 
 	def test_passes_correct_list_to_template(self):
-		''' Тест: Передается правильный шаблон списка. '''
+		""" Тест: Передается правильный шаблон списка. """
 
-		other_list = List.objects.create()
 		correct_list = List.objects.create()
 		response = self.client.get(f'/lists/{correct_list.id}/')
 		self.assertEqual(response.context['list'], correct_list)
 
 	def test_displays_all_items(self):
-		''' Тест: Отображаются все элементы списка. '''
+		""" Тест: Отображаются все элементы списка. """
 		correct_list = List.objects.create()
-		Item.objects.create(text='itemey 1', list=correct_list)
-		Item.objects.create(text='itemey 2', list=correct_list)
+		Item.objects.create(text='item 1', list=correct_list)
+		Item.objects.create(text='item 2', list=correct_list)
 
 		other_list = List.objects.create()
 		Item.objects.create(text='другой элемент 1 списка', list=other_list)
@@ -96,17 +92,17 @@ class ListViewTest(TestCase):
 
 		response = self.client.get(f'/lists/{correct_list.id}/')
 
-		self.assertContains(response, 'itemey 1')
-		self.assertContains(response, 'itemey 2')
+		self.assertContains(response, 'item 1')
+		self.assertContains(response, 'item 2')
 		self.assertNotContains(response, 'другой элемент 1 списка')
 		self.assertNotContains(response, 'другой элемент 2 списка')
 
 
 class ListAndItemModelTest(TestCase):
-	''' Тест модели элемента списка '''
+	""" Тест модели элемента списка """
 
-	def test_saving_and_reteieving_item(self):
-		''' Тест: Сохранение и получение элементов списка '''
+	def test_saving_and_retrieving_item(self):
+		""" Тест: Сохранение и получение элементов списка """
 
 		list_ = List()
 		list_.save()
@@ -133,7 +129,3 @@ class ListAndItemModelTest(TestCase):
 		self.assertEqual(first_saved_item.list, list_)
 		self.assertEqual(second_saved_item.text, 'Элемент второй')
 		self.assertEqual(second_saved_item.list, list_)
-
-
-
-
