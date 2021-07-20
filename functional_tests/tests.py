@@ -51,7 +51,7 @@ class NewVisitorTest(LiveServerTestCase):
         input_box = self.browser.find_element_by_id('id_new_item')
         self.assertEqual(
             input_box.get_attribute('placeholder'),
-            'ВВедите элемент списка'
+            'Введите элемент списка'
         )
 
         # Она набирает в текстовом поле "Купить павлиньи перья" (её хобби -
