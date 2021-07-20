@@ -7,19 +7,21 @@ import time
 
 MAX_WAIT = 10
 
+
 class NewVisitorTest(LiveServerTestCase):
-    ''' Тест нового посетителя. '''
+    """ Тест нового посетителя. """
 
     def setUp(self):
-        ''' Установка. '''
+        """ Установка.
+        """
         self.browser = webdriver.Firefox()
 
     def tearDown(self):
-        ''' Демонтаж. '''
+        """ Демонтаж. """
         self.browser.quit()
 
     def wait_for_row_in_list_table(self, row_text):
-        ''' Ожидать строку в таблице списка. '''
+        """ Ожидать строку в таблице списка. """
 
         start_time = time.time()
         while True:
@@ -33,10 +35,8 @@ class NewVisitorTest(LiveServerTestCase):
                     raise e
                 time.sleep(0.5)
 
-
-
     def test_can_start_a_list_for_one_user(self):
-        ''' Тест: Можно начать список и получить его позже. '''
+        """ Тест: Можно начать список и получить его позже. """
         # Эдит слышала про крутое онлайн-приложение со списком
         # неотложных дел. Она решает оценить его домашнюю страницу
         self.browser.get(self.live_server_url)
@@ -48,44 +48,42 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertIn('To-Do', header_text)
 
         # Ей сразу же предлагается ввести элемент списка
-        inputbox = self.browser.find_element_by_id('id_new_item')
+        input_box = self.browser.find_element_by_id('id_new_item')
         self.assertEqual(
-            inputbox.get_attribute('placeholder'),
-            'Enter a to-do item'
-            )
+            input_box.get_attribute('placeholder'),
+            'ВВедите элемент списка'
+        )
 
         # Она набирает в текстовом поле "Купить павлиньи перья" (её хобби -
         # вязание рыболовных мушек)
-        inputbox.send_keys('Купить павлиньи перья')
+        input_box.send_keys('Купить павлиньи перья')
 
         # Когда она нажимает enter, страница обновляется, и теперь страница
-        # содержит "1: Купить павлинья перьи" в качестве элемента списка.
-        inputbox.send_keys(Keys.ENTER)
+        # содержит "1: Купить павлинья перья" в качестве элемента списка.
+        input_box.send_keys(Keys.ENTER)
         self.wait_for_row_in_list_table('1: Купить павлиньи перья')
-
 
         # Текстовое поле по-прежнему приглашает ее добавить еще один элемент.
         # Она вводит "Сделать мушку из павлиньих перьев"
         # (Эдит очень методична)
-        inputbox = self.browser.find_element_by_id('id_new_item')
-        inputbox.send_keys('Сделать мушку из павлиньих перьев')
-        inputbox.send_keys(Keys.ENTER)
+        input_box = self.browser.find_element_by_id('id_new_item')
+        input_box.send_keys('Сделать мушку из павлиньих перьев')
+        input_box.send_keys(Keys.ENTER)
 
-        # Страница снова обнавляется и теперь показывает оба элемента ее списка
+        # Страница снова обновляется и теперь показывает оба элемента ее списка
         self.wait_for_row_in_list_table('2: Сделать мушку из павлиньих перьев')
         self.wait_for_row_in_list_table('1: Купить павлиньи перья')
 
         # Удовлетворенная, он снова ложится спать
 
-
     def test_multiple_users_can_start_lists_at_different_urls(self):
-        ''' Тест: Многочисленные пользователи могут начать списки по разным url. '''
+        """ Тест: Многочисленные пользователи могут начать списки по разным url. """
 
         # Эдит начинает новый список
         self.browser.get(self.live_server_url)
-        inputbox = self.browser.find_element_by_id('id_new_item')
-        inputbox.send_keys('Купить павлиньи перья')
-        inputbox.send_keys(Keys.ENTER)
+        input_box = self.browser.find_element_by_id('id_new_item')
+        input_box.send_keys('Купить павлиньи перья')
+        input_box.send_keys(Keys.ENTER)
         self.wait_for_row_in_list_table('1: Купить павлиньи перья')
 
         # Она замечает, что ее список имеет уникальный адрес
@@ -94,8 +92,8 @@ class NewVisitorTest(LiveServerTestCase):
 
         # Теперь новый пользователь, Френсис, приходит на сайт.
 
-        ## Мы используем новый сеанс браузера, тем самым обеспечивая, чтобы никакая
-        ## информация от Эдит не прошла через данные cookie и пр.
+        # Мы используем новый сеанс браузера, тем самым обеспечивая, чтобы никакая
+        # информация от Эдит не прошла через данные cookie и пр.
         self.browser.quit()
         self.browser = webdriver.Firefox()
 
@@ -107,9 +105,9 @@ class NewVisitorTest(LiveServerTestCase):
 
         # Фрэнсис начинает новый список, вводя новый элемент. Он менее
         # интересен, чем список Эдит...
-        inputbox = self.browser.find_element_by_id('id_new_item')
-        inputbox.send_keys('Купить молоко')
-        inputbox.send_keys(Keys.ENTER)
+        input_box = self.browser.find_element_by_id('id_new_item')
+        input_box.send_keys('Купить молоко')
+        input_box.send_keys(Keys.ENTER)
         self.wait_for_row_in_list_table('1: Купить молоко')
 
         # Фрэнсис получает уникальный URL-адрес
@@ -123,3 +121,30 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertIn('Купить молоко', page_text)
 
         # Удовлетворенные, они оба ложатся спать
+
+    def test_layout_and_styling(self):
+        """Тест: Макета и Стилевого оформления"""
+
+        # Эдит открывает домашнюю страницу
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024, 768)
+
+        # Она замечает, что поле ввода аккуратно центрировано
+        input_box = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(
+            input_box.location['x'] + input_box.size['width'] / 2,
+            512,
+            delta=10
+        )
+
+        # Она начинает новый список и видит, что поле ввода там тоже
+        # аккуратно центрировано
+        input_box.send_keys('testing')
+        input_box.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1: testing')
+        input_box = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(
+            input_box.location['x'] + input_box.size['width'] / 2,
+            512,
+            delta=10
+        )
