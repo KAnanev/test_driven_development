@@ -1,0 +1,18 @@
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=kananev
+Group=www-data
+WorkingDirectory=/home/kananev/sites/superlists.roool.ru/source
+ExecStart=/home/kananev/sites/superlists.roool.ru/virtualenv/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/gunicorn.sock \
+          superlists.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
