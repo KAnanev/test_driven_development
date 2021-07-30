@@ -22,6 +22,7 @@ class ItemValidationTest(FunctionalTest):
         # это срабатывает
         self.browser.find_element_by_id('id_new_item').send_keys('Buy milk')
         self.browser.find_element_by_id('id_new_item').send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1: Buy milk')
 
         # Как ни странно, Эдит решает отправить второй пустой элемент списка
         self.browser.find_element_by_id('id_new_item').send_keys(Keys.ENTER)

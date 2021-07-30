@@ -5,21 +5,19 @@ from lists.models import Item, List
 
 
 class HomePageTest(TestCase):
-	""" Тест домашней страницы. """
+	"""Тест домашней страницы."""
 
 	def test_uses_home_template(self):
-		""" Тест: Используется домашний шаблон. """
-
+		"""Тест: Используется домашний шаблон."""
 		response = self.client.get('/')
 		self.assertTemplateUsed(response, 'home.html')
 
 
 class NewListTest(TestCase):
-	""" Тест нового списка """
+	"""Тест нового списка"""
 
 	def test_can_save_a_POST_request(self):
-		""" Тест: Можно сохранить post-запрос. """
-
+		"""Тест: Можно сохранить post-запрос."""
 		self.client.post('/lists/new', data={'item_text': 'A new list item'})
 
 		self.assertEqual(Item.objects.count(), 1)
@@ -28,7 +26,6 @@ class NewListTest(TestCase):
 
 	def test_redirects_after_POST(self):
 		""" Тест: переадресует после post-запроса.  """
-
 		response = self.client.post('/lists/new', data={'item_text': 'A new list item'})
 		new_list = List.objects.first()
 		self.assertRedirects(response, f'/lists/{new_list.id}/')
@@ -42,18 +39,46 @@ class NewListTest(TestCase):
 		self.assertContains(response, expected_error)
 
 	def test_invalid_list_items_arent_saved(self):
-		""" Тест: Сохраняются недопустимые элементы списка """
+		"""Тест: Сохраняются недопустимые элементы списка"""
 		self.client.post('/lists/new', data={'item_text': ''})
 		self.assertEqual(List.objects.count(), 0)
 		self.assertEqual(Item.objects.count(), 0)
 
 
-class NewItemTest(TestCase):
-	""" Тест нового элемента списка """
+class ListViewTest(TestCase):
+	"""Тест: Представление списка."""
+
+	def test_uses_list_templates(self):
+		"""Тест: Используется шаблон списка."""
+		list_ = List.objects.create()
+		response = self.client.get(f'/lists/{list_.id}/')
+		self.assertTemplateUsed(response, 'list.html')
+
+	def test_passes_correct_list_to_template(self):
+		""" Тест: Передается правильный шаблон списка. """
+		other_list = List.objects.create()
+		correct_list = List.objects.create()
+		response = self.client.get(f'/lists/{correct_list.id}/')
+		self.assertEqual(response.context['list'], correct_list)
+
+	def test_displays_all_items(self):
+		""" Тест: Отображаются все элементы списка. """
+		correct_list = List.objects.create()
+		Item.objects.create(text='itemey 1', list=correct_list)
+		Item.objects.create(text='itemey 2', list=correct_list)
+		other_list = List.objects.create()
+		Item.objects.create(text='другой элемент 1 списка', list=other_list)
+		Item.objects.create(text='другой элемент 2 списка', list=other_list)
+
+		response = self.client.get(f'/lists/{correct_list.id}/')
+
+		self.assertContains(response, 'itemey 1')
+		self.assertContains(response, 'itemey 2')
+		self.assertNotContains(response, 'другой элемент 1 списка')
+		self.assertNotContains(response, 'другой элемент 2 списка')
 
 	def test_can_save_a_POST_request_to_an_existing_list(self):
 		""" Тест: Можно сохранить post-запрос в существующий список """
-
 		other_list = List.objects.create()
 		correct_list = List.objects.create()
 
@@ -79,39 +104,3 @@ class NewItemTest(TestCase):
 		)
 
 		self.assertRedirects(response, f'/lists/{correct_list.id}/')
-
-
-class ListViewTest(TestCase):
-	""" Тест: Представление списка. """
-
-	def test_uses_list_templates(self):
-		""" Тест: Используется шаблон списка. """
-
-		list_ = List.objects.create()
-		response = self.client.get(f'/lists/{list_.id}/')
-		self.assertTemplateUsed(response, 'list.html')
-
-	def test_passes_correct_list_to_template(self):
-		""" Тест: Передается правильный шаблон списка. """
-
-		other_list = List.objects.create()
-		correct_list = List.objects.create()
-		response = self.client.get(f'/lists/{correct_list.id}/')
-		self.assertEqual(response.context['list'], correct_list)
-
-	def test_displays_all_items(self):
-		""" Тест: Отображаются все элементы списка. """
-		correct_list = List.objects.create()
-		Item.objects.create(text='itemey 1', list=correct_list)
-		Item.objects.create(text='itemey 2', list=correct_list)
-
-		other_list = List.objects.create()
-		Item.objects.create(text='другой элемент 1 списка', list=other_list)
-		Item.objects.create(text='другой элемент 2 списка', list=other_list)
-
-		response = self.client.get(f'/lists/{correct_list.id}/')
-
-		self.assertContains(response, 'itemey 1')
-		self.assertContains(response, 'itemey 2')
-		self.assertNotContains(response, 'другой элемент 1 списка')
-		self.assertNotContains(response, 'другой элемент 2 списка')
