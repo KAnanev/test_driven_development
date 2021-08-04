@@ -5,7 +5,7 @@ from lists.forms import ItemForm, EMPTY_ITEM_ERROR
 class ItemFormTest(TestCase):
     """Тест: Формы для элемента списка."""
 
-    def test_form_renders_item_text_input(self):
+    def test_form_renders_text_input(self):
         """Тест: Форма отображает текстовое поле ввода."""
         form = ItemForm()
         self.assertIn('placeholder="Enter a to-do item"', form.as_p())
