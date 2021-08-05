@@ -3,6 +3,7 @@ from lists.models import Item
 
 EMPTY_ITEM_ERROR = "You can't have an empty list item"
 
+
 class ItemForm(forms.models.ModelForm):
     """Форма для элемента списка."""
     class Meta:
@@ -11,7 +12,7 @@ class ItemForm(forms.models.ModelForm):
         widgets = {
             'text': forms.fields.TextInput(
                 attrs={
-                    'placeholder': 'Enter a to-do item',
+                    'placeholder': 'Введите элемент списка',
                     'class': 'form-control input-lg',
                 }
             )
